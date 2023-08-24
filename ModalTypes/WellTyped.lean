@@ -22,6 +22,8 @@ inductive WellTyped : Context → Term → Ty → Prop
   | inl : WellTyped Γ t A → WellTyped Γ (.inl t) [| A + B |]
   /-- Standard rule for sums -/
   | inr : WellTyped Γ t B → WellTyped Γ (.inr t) [| A + B |]
+  | fst : WellTyped Γ t [| A × B |] → WellTyped Γ (.fst t) A
+  | snd : WellTyped Γ t [| A × B |] → WellTyped Γ (.snd t) B
   /-
     TODO: in this encoding of the shut rule, `Γ'` cannot contain any more locks, but the original
       has no such restriction.

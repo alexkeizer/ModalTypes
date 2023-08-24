@@ -10,6 +10,8 @@ inductive Term
   | pair : Term → Term → Term
   | inl : Term → Term
   | inr : Term → Term
+  | fst : Term → Term
+  | snd : Term → Term
   /-- open a box modality -/
   | open : Term → Term
   /-- shut a box modality -/
