@@ -1,9 +1,11 @@
 import ModalTypes.Term
 import ModalTypes.Type
 import ModalTypes.Context
+import Aesop
 
 open Ty
 
+@[aesop safe constructors]
 inductive WellTyped : Context → Term → Ty → Prop
   /-- 
     The variable rule specifies we may only access variables to the right of the last lock.
@@ -13,7 +15,7 @@ inductive WellTyped : Context → Term → Ty → Prop
   /-- Standard rule for lambdas -/
   | lam : WellTyped (Γ.add A) t B → WellTyped Γ (.lam A t) [| A → B |]
   /-- Standard rule for application -/
-  | app : WellTyped Γ f [| A → B|] → WellTyped Γ t A → WellTyped Γ (.app f t) B
+  | app (A) : WellTyped Γ f [| A → B|] → WellTyped Γ t A → WellTyped Γ (.app f t) B
   /-- Standard rule for products -/
   | prod : WellTyped Γ t A → WellTyped Γ u B → WellTyped Γ (.pair t u) [| A × B |]
   /-- Standard rule for sums -/
@@ -30,19 +32,16 @@ inductive WellTyped : Context → Term → Ty → Prop
   | shut : WellTyped ([]::Γ) t A → WellTyped Γ (.shut t) [| □A |]
 
 
--- namespace WellTyped
---   theorem lam_iff : WellTyped Γ t [| A → B |] ↔ 
---       (∃ x, t = .var x ∧ Γ.get? ⟨0, x⟩ = some A )
---       ∨ (∃ u, t = .lam A u ∧ WellTyped [] u B) := by
---     constructor
---     . intro h
---       cases h
--- end WellTyped
 
 example : ∃ t, WellTyped [] t [| □(A → B) → □A → □B |] := by
   refine ⟨
-    .lam _ <| .lam _ <| .shut <| .app ?_ ?_,
-    .lam <| .lam <| .shut <| ?h -- .app ?h₁ ?h₂
+    .lam _ <| .lam _ <| .shut <| .app (.open <| .var 1) (.open <| .var 0),
+    .lam <| .lam <| .shut ?h
   ⟩
-  case h =>
-    sorry
+  rw [←List.nil_append 
+      ([] :: Context.add (mod Modality.Box A) (Context.add (mod Modality.Box (.fun A B)) []))]
+  apply WellTyped.app A <;> {
+    apply WellTyped.open
+    apply WellTyped.var
+    rfl
+  }
