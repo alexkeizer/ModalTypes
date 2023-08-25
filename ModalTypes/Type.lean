@@ -19,7 +19,7 @@ inductive Ty
 namespace Ty
 
 declare_syntax_cat mod_ty
-scoped syntax "[|" mod_ty "|]" : term
+scoped syntax "⟪" mod_ty "⟫" : term
 
 syntax:66 mod_ty:65 " → " mod_ty:66 : mod_ty
 syntax mod_ty " + " mod_ty : mod_ty
@@ -30,13 +30,13 @@ syntax "(" mod_ty ")" : mod_ty
 syntax ident : mod_ty
 
 macro_rules
-  | `([| $A → $B |]) => `(Ty.fun [| $A |] [| $B |])
-  | `([| $A × $B |]) => `(Ty.pair [| $A |] [| $B |])
-  | `([| $A + $B |]) => `(Ty.sum [| $A |] [| $B |])
-  | `([| □$A |]) => `(Ty.mod .Box [| $A |])
-  | `([| ◇$A |]) => `(Ty.mod .Dia [| $A |])
-  | `([| ($A) |]) => `([|$A|])
-  | `([| $A:ident |]) => `($A:term)
+  | `(⟪ $A → $B ⟫) => `(Ty.fun ⟪ $A ⟫ ⟪ $B ⟫)
+  | `(⟪ $A × $B ⟫) => `(Ty.pair ⟪ $A ⟫ ⟪ $B ⟫)
+  | `(⟪ $A + $B ⟫) => `(Ty.sum ⟪ $A ⟫ ⟪ $B ⟫)
+  | `(⟪ □$A ⟫) => `(Ty.mod .Box ⟪ $A ⟫)
+  | `(⟪ ◇$A ⟫) => `(Ty.mod .Dia ⟪ $A ⟫)
+  | `(⟪ ($A) ⟫) => `(⟪$A⟫)
+  | `(⟪ $A:ident ⟫) => `($A:term)
   
 
 end Ty
