@@ -15,8 +15,7 @@ def TypeScheme.apply (t : TypeScheme n) (args : Vector Ty n) : Ty :=
 namespace HilbertProof
 
 
-
-inductive Index (ax n : Nat) : Type
+inductive Hypothesis (Γ : List (Σn, TypeScheme n)) (t : ) : Type
   /-- An axiom -/
   | axiomI (i : Fin ax)
   /-- A previously proven result -/
@@ -33,6 +32,6 @@ end HilbertProof
   Treating types just as formulas, a `HilbertProof t` shows that `t` is an axiom.
   A proof is 
 -/
-inductive HilbertProof : TypeScheme n → Prop
+inductive HilbertProof : List (Σn, TypeScheme n) → TypeScheme n → Prop
   | quantify (t : TypeScheme (n+1)) : (∀ u, HilbertProof <| t u) → HilbertProof t 
   | 
