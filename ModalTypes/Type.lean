@@ -44,6 +44,21 @@ def substituteAt (i : Fin (n+1)) (substituent : TypeScheme n) : TypeScheme (n+1)
       else
         .var <| .predAbove (i.castPred) j
 
+@[simp]
+theorem substitute_Ty (A : Ty) {f} :
+    A.substitute f = A := by
+  induction A <;> simp_all [substitute]
+  next i => exact Fin.elim0 i
+
+theorem substitute_substitute (A : TypeScheme n) 
+    (f : Fin m → TypeScheme l) (g : Fin n → TypeScheme m) :
+    substitute f (substitute g A) = substitute (fun i => substitute f (g i)) A := by
+  induction A <;> simp_all [substitute]
+
+
+
+/- ## Notation -/
+
 declare_syntax_cat mod_ty
 scoped syntax "⟪" mod_ty "⟫" : term
 
@@ -55,6 +70,7 @@ syntax:99 "◇" mod_ty:99 : mod_ty
 syntax "(" mod_ty ")" : mod_ty
 syntax ident : mod_ty
 syntax "%"term:100 : mod_ty
+syntax "${" term "}" : mod_ty
 
 macro_rules
   | `(⟪ $A → $B ⟫) => `(TypeScheme.fun ⟪ $A ⟫ ⟪ $B ⟫)
@@ -65,5 +81,6 @@ macro_rules
   | `(⟪ ($A) ⟫) => `(⟪$A⟫)
   | `(⟪ $A:ident ⟫) => `($A:term)
   | `(⟪ %$n:term ⟫) => `(TypeScheme.var $n)
+  | `(⟪ ${ $t:term } ⟫) => `($t)
 
 end TypeScheme
