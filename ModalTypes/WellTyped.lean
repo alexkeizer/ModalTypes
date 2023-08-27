@@ -143,15 +143,15 @@ theorem closed_of_wellTyped_empty : (⊢ t : A) → t.IsClosed := by
 
 
 /-- Rule of necessitation -/
-theorem weaken_addLock_of_closed {t : Term} : (⊢ t : A) → ([[]] ⊢ t : A) := by
+theorem weaken_addLock_of_closed {t : Term} : (Γ ⊢ t : A) → ((Γ.concat []) ⊢ t : A) := by
   intro h_wt
-  have h_closed : t.IsClosedUpTo ([] : Context).length := closed_of_wellTyped_empty h_wt
-  generalize [] = Γ at h_wt h_closed ⊢
   induction h_wt 
-  case var => 
-    contradiction
-  case lam ih =>
-    simp
+  case var h => apply var h
+  case lam h ih =>
+    -- rw [Context.add] at ih
+    apply lam
+    apply ih
+    
 
 
 -- theorem weakenOne : (Γ ⊢ t : A) → (Γ' :: Γ) ⊢ t : A := by
